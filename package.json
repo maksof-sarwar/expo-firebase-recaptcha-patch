@@ -1,0 +1,37 @@
+{
+	"name": "@itzsunny/firebase-login",
+	"license": "MIT",
+	"version": "0.0.1",
+	"main": "dist/index.js",
+	"module": "dist/index.mjs",
+	"types": "dist/index.d.ts",
+	"keywords": [
+		"firebase-patch",
+		"firebase",
+		"expo-firebase",
+		"library",
+		"itzsunny/firebase-patch",
+		"itzsunny/firebase-login",
+		"itzsunny",
+		"@itzsunny"
+	],
+	"scripts": {
+		"build": "tsup",
+		"lint": "tsc"
+	},
+	"devDependencies": {
+		"@changesets/cli": "^2.26.0",
+		"@types/bcrypt": "^5.0.0",
+		"@types/lodash": "^4.14.191",
+		"@types/react": "^18.2.41",
+		"tsup": "^6.5.0",
+		"typescript": "^4.9.4"
+	},
+	"dependencies": {
+		"expo-modules-core": "^1.5.12",
+		"firebase": "^10.7.0",
+		"react": "^18.2.0",
+		"react-native": "^0.72.7",
+		"react-native-webview": "^13.6.3"
+	}
+}
