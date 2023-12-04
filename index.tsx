@@ -7,7 +7,7 @@ import { FirebaseRecaptchaVerifierModal } from './src/firebase-recaptcha/modal';
 interface UseFirebaseLogin {
 	auth: Auth;
 	firebaseConfig: FirebaseOptions;
-	modalOption?: ComponentProps<typeof FirebaseRecaptchaBanner>;
+	modalOption?: ComponentProps<typeof FirebaseRecaptchaVerifierModal>;
 	bannerOption?: ComponentProps<typeof FirebaseRecaptchaBanner>;
 }
 
