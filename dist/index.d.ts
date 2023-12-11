@@ -30,7 +30,7 @@ interface Props$1 extends React.ComponentProps<typeof WebView> {
 }
 declare function FirebaseRecaptcha(props: Props$1): React.JSX.Element;
 
-interface Props extends Omit<React.ComponentProps<typeof FirebaseRecaptcha>, "onVerify" | "invisible" | "verify" | "onVerify" | "onLoad" | "onError" | "onFullChallenge"> {
+interface Props extends Omit<React.ComponentProps<typeof FirebaseRecaptcha>, 'onVerify' | 'invisible' | 'verify' | 'onVerify' | 'onLoad' | 'onError' | 'onFullChallenge'> {
     title?: string;
     cancelLabel?: string;
     attemptInvisibleVerification?: boolean;

@@ -56,12 +56,10 @@ import {
   Text as Text2,
   View as View2
 } from "react-native";
-import { CodedError as CodedError2 } from "expo-modules-core";
 
 // src/firebase-recaptcha/index.tsx
 import * as React from "react";
 import { WebView } from "react-native-webview";
-import { CodedError } from "expo-modules-core";
 function getWebviewSource(firebaseConfig, firebaseVersion, appVerificationDisabledForTesting = false, languageCode, invisible) {
   firebaseVersion = firebaseVersion || "8.0.0";
   return {
@@ -159,17 +157,16 @@ function getWebviewSource(firebaseConfig, firebaseVersion, appVerificationDisabl
 }
 function validateFirebaseConfig(firebaseConfig) {
   if (!firebaseConfig) {
-    throw new CodedError(
-      "ERR_FIREBASE_RECAPTCHA_CONFIG",
-      `Missing firebase web configuration. Please set the "expo.web.config.firebase" field in "app.json" or use the "firebaseConfig" prop.`
-    );
+    const err = new Error("Missing firebase web configuration.");
+    err["code"] = "ERR_FIREBASE_RECAPTCHA_CONFIG";
+    throw err;
   }
   const { authDomain } = firebaseConfig;
   if (!authDomain) {
-    throw new CodedError(
-      "ERR_FIREBASE_RECAPTCHA_CONFIG",
-      `Missing "authDomain" in firebase web configuration.`
+    const err = new Error(
+      'Missing "authDomain" in firebase web configuration.'
     );
+    err["code"] = "ERR_FIREBASE_RECAPTCHA_CONFIG";
   }
 }
 function FirebaseRecaptcha(props) {
@@ -311,12 +308,9 @@ var _FirebaseRecaptchaVerifierModal = class extends React2.Component {
   onError = () => {
     const { reject } = this.state;
     if (reject) {
-      reject(
-        new CodedError2(
-          "ERR_FIREBASE_RECAPTCHA_ERROR",
-          "Failed to load reCAPTCHA"
-        )
-      );
+      const err = new Error("Failed to load reCAPTCHA");
+      err["code"] = "ERR_FIREBASE_RECAPTCHA_ERROR";
+      reject(err);
     }
     this.setState({
       visible: false,
@@ -338,9 +332,9 @@ var _FirebaseRecaptchaVerifierModal = class extends React2.Component {
   cancel = () => {
     const { reject } = this.state;
     if (reject) {
-      reject(
-        new CodedError2("ERR_FIREBASE_RECAPTCHA_CANCEL", "Cancelled by user")
-      );
+      const err = new Error("Cancelled by user");
+      err["code"] = "ERR_FIREBASE_RECAPTCHA_CANCEL";
+      reject(err);
     }
     this.setState({
       visible: false

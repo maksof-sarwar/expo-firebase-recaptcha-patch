@@ -2,7 +2,7 @@
 	"name": "@itzsunny/firebase-login",
 	"author": "Muhammad Sarwar",
 	"license": "MIT",
-	"version": "0.0.7",
+	"version": "0.0.8",
 	"main": "dist/index.js",
 	"module": "dist/index.mjs",
 	"types": "dist/index.d.ts",
@@ -33,7 +33,6 @@
 		"typescript": "^4.9.4"
 	},
 	"peerDependencies": {
-		"expo-modules-core": "^1.5.12",
 		"firebase": "^10.7.0",
 		"react": "^18.2.0",
 		"react-native": "^0.72.7",

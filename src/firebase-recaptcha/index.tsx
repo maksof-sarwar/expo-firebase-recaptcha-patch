@@ -1,37 +1,37 @@
-import * as React from "react";
-import { WebView } from "react-native-webview";
-import { CodedError } from "expo-modules-core";
-import { FirebaseOptions } from "firebase/app";
+import * as React from 'react';
+import { WebView } from 'react-native-webview';
+import { CustomError } from '../types';
+import { FirebaseOptions } from 'firebase/app';
 
 export interface FirebaseAuthApplicationVerifier {
-  readonly type: string;
-  verify(): Promise<string>;
+	readonly type: string;
+	verify(): Promise<string>;
 }
 
 interface Props extends React.ComponentProps<typeof WebView> {
-  firebaseConfig?: FirebaseOptions;
-  firebaseVersion?: string;
-  appVerificationDisabledForTesting?: boolean;
-  languageCode?: string;
-  onLoad?: () => any;
-  onError?: () => any;
-  onVerify: (token: string) => any;
-  onFullChallenge?: () => any;
-  invisible?: boolean;
-  verify?: boolean;
+	firebaseConfig?: FirebaseOptions;
+	firebaseVersion?: string;
+	appVerificationDisabledForTesting?: boolean;
+	languageCode?: string;
+	onLoad?: () => any;
+	onError?: () => any;
+	onVerify: (token: string) => any;
+	onFullChallenge?: () => any;
+	invisible?: boolean;
+	verify?: boolean;
 }
 
 function getWebviewSource(
-  firebaseConfig: FirebaseOptions,
-  firebaseVersion?: string,
-  appVerificationDisabledForTesting: boolean = false,
-  languageCode?: string,
-  invisible?: boolean,
+	firebaseConfig: FirebaseOptions,
+	firebaseVersion?: string,
+	appVerificationDisabledForTesting: boolean = false,
+	languageCode?: string,
+	invisible?: boolean
 ) {
-  firebaseVersion = firebaseVersion || "8.0.0";
-  return {
-    baseUrl: `https://${firebaseConfig.authDomain}`,
-    html: `
+	firebaseVersion = firebaseVersion || '8.0.0';
+	return {
+		baseUrl: `https://${firebaseConfig.authDomain}`,
+		html: `
 <!DOCTYPE html><html>
 <head>
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
@@ -40,8 +40,8 @@ function getWebviewSource(
   <script src="https://www.gstatic.com/firebasejs/${firebaseVersion}/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/${firebaseVersion}/firebase-auth.js"></script>
   <script type="text/javascript">firebase.initializeApp(${JSON.stringify(
-    firebaseConfig,
-  )});</script>
+		firebaseConfig
+	)});</script>
   <style>
     html, body {
       height: 100%;
@@ -60,10 +60,10 @@ function getWebviewSource(
 </head>
 <body>
   ${
-    invisible
-      ? `<button id="recaptcha-btn" type="button" onclick="onClickButton()">Confirm reCAPTCHA</button>`
-      : `<div id="recaptcha-cont" class="g-recaptcha"></div>`
-  }
+		invisible
+			? `<button id="recaptcha-btn" type="button" onclick="onClickButton()">Confirm reCAPTCHA</button>`
+			: `<div id="recaptcha-cont" class="g-recaptcha"></div>`
+	}
   <script>
     var fullChallengeTimer;
     function onVerify(token) {
@@ -81,11 +81,11 @@ function getWebviewSource(
         type: 'load'
       }));
       firebase.auth().settings.appVerificationDisabledForTesting = ${appVerificationDisabledForTesting};
-      ${languageCode ? `firebase.auth().languageCode = '${languageCode}';` : ""}
+      ${languageCode ? `firebase.auth().languageCode = '${languageCode}';` : ''}
       window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("${
-        invisible ? "recaptcha-btn" : "recaptcha-cont"
-      }", {
-        size: "${invisible ? "invisible" : "normal"}",
+				invisible ? 'recaptcha-btn' : 'recaptcha-cont'
+			}", {
+        size: "${invisible ? 'invisible' : 'normal'}",
         callback: onVerify
       });
       window.recaptchaVerifier.render();
@@ -125,103 +125,102 @@ function getWebviewSource(
     });
   </script>
   <script src="https://www.google.com/recaptcha/api.js?onload=onLoad&render=explicit&hl=${
-    languageCode ?? ""
-  }" onerror="onError()"></script>
+		languageCode ?? ''
+	}" onerror="onError()"></script>
 </body></html>`,
-  };
+	};
 }
 
 function validateFirebaseConfig(firebaseConfig?: FirebaseOptions) {
-  if (!firebaseConfig) {
-    throw new CodedError(
-      "ERR_FIREBASE_RECAPTCHA_CONFIG",
-      `Missing firebase web configuration. Please set the "expo.web.config.firebase" field in "app.json" or use the "firebaseConfig" prop.`,
-    );
-  }
-  const { authDomain } = firebaseConfig;
-  if (!authDomain) {
-    throw new CodedError(
-      "ERR_FIREBASE_RECAPTCHA_CONFIG",
-      `Missing "authDomain" in firebase web configuration.`,
-    );
-  }
+	if (!firebaseConfig) {
+		const err = new Error('Missing firebase web configuration.') as CustomError;
+		err['code'] = 'ERR_FIREBASE_RECAPTCHA_CONFIG';
+		throw err;
+	}
+	const { authDomain } = firebaseConfig;
+	if (!authDomain) {
+		const err = new Error(
+			'Missing "authDomain" in firebase web configuration.'
+		) as CustomError;
+		err['code'] = 'ERR_FIREBASE_RECAPTCHA_CONFIG';
+	}
 }
 
 export function FirebaseRecaptcha(props: Props) {
-  const {
-    firebaseConfig,
-    firebaseVersion,
-    appVerificationDisabledForTesting,
-    languageCode,
-    onVerify,
-    onLoad,
-    onError,
-    onFullChallenge,
-    invisible,
-    verify,
-    ...otherProps
-  } = props;
-  const webview = React.useRef(null);
-  const [loaded, setLoaded] = React.useState(false);
-  React.useEffect(() => {
-    if (webview.current && loaded && verify) {
-      // @ts-ignore: Object is possibly null
-      webview.current.injectJavaScript(`
+	const {
+		firebaseConfig,
+		firebaseVersion,
+		appVerificationDisabledForTesting,
+		languageCode,
+		onVerify,
+		onLoad,
+		onError,
+		onFullChallenge,
+		invisible,
+		verify,
+		...otherProps
+	} = props;
+	const webview = React.useRef(null);
+	const [loaded, setLoaded] = React.useState(false);
+	React.useEffect(() => {
+		if (webview.current && loaded && verify) {
+			// @ts-ignore: Object is possibly null
+			webview.current.injectJavaScript(`
     (function(){
       window.dispatchEvent(new MessageEvent('message', {data: { verify: true }}));
     })();
     true;
     `);
-    }
-    return () => {};
-  }, [webview, verify, loaded]);
-  validateFirebaseConfig(firebaseConfig);
-  if (!firebaseConfig) {
-    console.error(
-      `FirebaseRecaptcha: Missing firebase web configuration. Please set the "expo.web.config.firebase" field in "app.json" or use the "firebaseConfig" prop.`,
-    );
-    return null;
-  }
-  return (
-    <WebView
-      ref={webview}
-      javaScriptEnabled
-      automaticallyAdjustContentInsets
-      scalesPageToFit
-      mixedContentMode="always"
-      source={getWebviewSource(
-        firebaseConfig,
-        firebaseVersion,
-        appVerificationDisabledForTesting,
-        languageCode,
-        invisible,
-      )}
-      onError={onError}
-      onMessage={(event) => {
-        const data = JSON.parse(event.nativeEvent.data);
-        switch (data.type) {
-          case "load":
-            if (onLoad) {
-              setLoaded(true);
-              onLoad();
-            }
-            break;
-          case "error":
-            if (onError) {
-              onError();
-            }
-            break;
-          case "verify":
-            onVerify(data.token);
-            break;
-          case "fullChallenge":
-            if (onFullChallenge) {
-              onFullChallenge();
-            }
-            break;
-        }
-      }}
-      {...otherProps}
-    />
-  );
+		}
+		return () => {};
+	}, [webview, verify, loaded]);
+	validateFirebaseConfig(firebaseConfig);
+	if (!firebaseConfig) {
+		console.error(
+			`FirebaseRecaptcha: Missing firebase web configuration. Please set the "expo.web.config.firebase" field in "app.json" or use the "firebaseConfig" prop.`
+		);
+		return null;
+	}
+	return (
+		<WebView
+			ref={webview}
+			javaScriptEnabled
+			automaticallyAdjustContentInsets
+			scalesPageToFit
+			mixedContentMode="always"
+			source={getWebviewSource(
+				firebaseConfig,
+				firebaseVersion,
+				appVerificationDisabledForTesting,
+				languageCode,
+				invisible
+			)}
+			onError={onError}
+			onMessage={(event) => {
+				const data = JSON.parse(event.nativeEvent.data);
+				switch (data.type) {
+					case 'load':
+						if (onLoad) {
+							setLoaded(true);
+							onLoad();
+						}
+						break;
+					case 'error':
+						if (onError) {
+							onError();
+						}
+						break;
+					case 'verify':
+						onVerify(data.token);
+						break;
+					case 'fullChallenge':
+						if (onFullChallenge) {
+							onFullChallenge();
+						}
+						break;
+				}
+			}}
+			{...otherProps}
+		/>
+	);
 }
