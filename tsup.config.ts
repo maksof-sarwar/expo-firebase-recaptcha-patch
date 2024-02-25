@@ -4,7 +4,7 @@ export default defineConfig({
   entry: ['index.tsx'],
   splitting: false,
   sourcemap: false,
-  format: ['cjs', 'esm'],
+  format: ['esm'],
   dts: true,
   outDir : 'dist',
   clean: true,
